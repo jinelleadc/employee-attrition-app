@@ -42,11 +42,11 @@ def train_model():
 model, scaler, le_dept, le_role, feature_cols, raw_df = train_model()
 
 # 2. Main Title
-st.title("🏢 Employee Attrition Predictor")
+st.title("Employee Attrition Predictor")
 st.markdown("Analyze workforce data and predict employee turnover using Machine Learning.")
 
 # 3. Create Tabs
-tab1, tab2, tab3 = st.tabs(["🎯 Predict Attrition", "📊 Exploratory Data Analysis", "🧠 Global Model Insights"])
+tab1, tab2, tab3 = st.tabs(["Predict Attrition", "Exploratory Data Analysis", "Global Model Insights"])
 
 # ==========================================
 # TAB 1: PREDICTION INTERFACE
