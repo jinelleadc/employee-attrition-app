@@ -45,7 +45,7 @@ def train_model():
 model, scaler, le_dept, le_role, feature_cols = train_model()
 
 # 2. Build the Web App Interface
-st.title("🚀 Employee Attrition Predictor")
+st.title("Employee Attrition Predictor")
 st.write("Enter the employee's details below to predict their likelihood of leaving the company.")
 
 # Create a two-column layout for a clean design
