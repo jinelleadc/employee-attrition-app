@@ -92,46 +92,53 @@ with tab1:
         probability = model.predict_proba(scaled_data)[0][1]
         
         st.divider()
-        st.subheader("Prediction Outcome")
         
-        res_col1, res_col2 = st.columns([1, 2])
-        
-        with res_col1:
-            if prediction == 1:
-                st.error("### ⚠️ YES\nEmployee is highly likely to leave.")
-            else:
-                st.success("### ✅ NO\nEmployee is likely to stay.")
+        # 1. WHAT: Centered Result Text using HTML
+        if prediction == 1:
+            st.markdown("<h2 style='text-align: center; color: #ff4b4b;'>⚠️ YES, Employee is highly likely to leave.</h2>", unsafe_allow_html=True)
+        else:
+            st.markdown("<h2 style='text-align: center; color: #00cc96;'>✅ NO, Employee is likely to stay.</h2>", unsafe_allow_html=True)
             
-            # Gauge chart for probability
-            fig_gauge = go.Figure(go.Indicator(
-                mode = "gauge+number",
-                value = probability * 100,
-                title = {'text': "Attrition Probability (%)"},
-                gauge = {'axis': {'range': [0, 100]},
-                         'bar': {'color': "red" if prediction == 1 else "green"}}
-            ))
-            fig_gauge.update_layout(height=250, margin=dict(l=20, r=20, t=30, b=20))
+        # 2. HOW MUCH: Centered Gauge Chart
+        fig_gauge = go.Figure(go.Indicator(
+            mode = "gauge+number",
+            value = probability * 100,
+            title = {'text': "Attrition Probability (%)"},
+            gauge = {'axis': {'range': [0, 100]},
+                     'bar': {'color': "red" if prediction == 1 else "green"}}
+        ))
+        fig_gauge.update_layout(height=300, margin=dict(l=20, r=20, t=50, b=20))
+        
+        # We use a 3-column trick to perfectly center the gauge chart so it doesn't stretch too wide
+        g_col1, g_col2, g_col3 = st.columns([1, 2, 1])
+        with g_col2:
             st.plotly_chart(fig_gauge, use_container_width=True)
 
-        with res_col2:
-            st.markdown("**Interpretability: What is driving this prediction?**")
-            # Calculate local feature importance: scaled input * model coefficients
-            contributions = scaled_data[0] * model.coef_[0]
-            contrib_df = pd.DataFrame({'Feature': feature_cols, 'Contribution': contributions})
-            contrib_df = contrib_df.sort_values(by='Contribution', ascending=True)
-            
-            # Plotly horizontal bar chart
-            fig_contrib = px.bar(
-                contrib_df, 
-                x='Contribution', 
-                y='Feature', 
-                orientation='h',
-                color='Contribution',
-                color_continuous_scale=px.colors.diverging.RdBu_r,
-                title="Factors pushing toward Leaving (Red) vs. Staying (Blue)"
-            )
-            fig_contrib.update_layout(height=300, margin=dict(l=0, r=0, t=30, b=0), coloraxis_showscale=False)
-            st.plotly_chart(fig_contrib, use_container_width=True)
+        st.divider()
+
+        # 3. WHY: Full-width Interpretability Bar Chart
+        st.markdown("<h4 style='text-align: center;'>Interpretability: What is driving this prediction?</h4>", unsafe_allow_html=True)
+        
+        contributions = scaled_data[0] * model.coef_[0]
+        contrib_df = pd.DataFrame({'Feature': feature_cols, 'Contribution': contributions})
+        contrib_df = contrib_df.sort_values(by='Contribution', ascending=True)
+        
+        fig_contrib = px.bar(
+            contrib_df, 
+            x='Contribution', 
+            y='Feature', 
+            orientation='h',
+            color='Contribution',
+            color_continuous_scale=px.colors.diverging.RdBu_r,
+        )
+        # Center the title of the chart and give it some breathing room
+        fig_contrib.update_layout(
+            title={'text': "Factors pushing toward Leaving (Red) vs. Staying (Blue)", 'x': 0.5},
+            height=400, 
+            margin=dict(l=0, r=0, t=40, b=0), 
+            coloraxis_showscale=False
+        )
+        st.plotly_chart(fig_contrib, use_container_width=True)
 
 # ==========================================
 # TAB 2: EXPLORATORY DATA ANALYSIS (EDA)
